@@ -1,17 +1,21 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Validators;
+using Domain.ValueObjects;
 
 namespace Domain.Entities
 {
     /// <summary>
     /// Аптека
     /// </summary>
-    public class DrugStore : BaseEntity
+    public class DrugStore : BaseEntity<DrugStore>
     {
         public DrugStore(string drugNetwork, int number, Address address)
         {
             DrugNetwork = drugNetwork;
             Number = number;
             Address = address;
+
+            // Вызов валидации через базовый класс
+            ValidateEntity(new DrugStoreValidator());
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿namespace Domain.ValueObjects
+﻿using Domain.Validators;
+
+namespace Domain.ValueObjects
 {
     /// <summary>
     /// Объект значения, представляющий адрес.
@@ -11,11 +13,15 @@
         /// <param name="city">Город.</param>
         /// <param name="street">Улица.</param>
         /// <param name="house">Номер дома.</param>
-        public Address(string city, string street, string house)
+        public Address(string city, string street, string house, string countryCode)
         {
             City = city;
             Street = street;
             House = house;
+            CountryCode = countryCode;
+            
+            // Вызов валидации для адреса
+            ValidateValueObject(new AddressValidator());
         }
         
         /// <summary>
@@ -32,6 +38,11 @@
         /// Номер дома.
         /// </summary>
         public string House { get; private set; }
+        
+        /// <summary>
+        /// Код страны
+        /// </summary>
+        public string CountryCode { get; private set; }
 
         /// <summary>
         /// Возвращает строковое представление адреса.
@@ -39,7 +50,7 @@
         /// <returns>Строка, представляющая адрес.</returns>
         public override string ToString()
         {
-            return $"{City}, {Street}, {House}";
+            return $"{City}, {Street}, {House} {CountryCode}";
         }
     }
 }

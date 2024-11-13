@@ -1,9 +1,12 @@
-﻿namespace Domain.Entities
+﻿using FluentValidation;
+using ValidationException = FluentValidation.ValidationException;
+
+namespace Domain.Entities
 {
     /// <summary>
-    /// Базовый класс для всех сущностей домена, обеспечивающий сравнение по идентификатору.
+    /// Базовый класс для всех сущностей домена, обеспечивающий сравнение по идентификатору и валидацию.
     /// </summary>
-    public abstract class BaseEntity
+    public abstract class BaseEntity<T> where T : BaseEntity<T>
     {
         /// <summary>
         /// Уникальный идентификатор сущности.
@@ -17,54 +20,57 @@
         {
             Id = Guid.NewGuid();
         }
-        
+
+        /// <summary>
+        /// Выполняет валидацию сущности с использованием указанного валидатора.
+        /// </summary>
+        /// <param name="validator">Валидатор FluentValidator.</param>
+        protected void ValidateEntity(AbstractValidator<T> validator)
+        {
+            var validationResult = validator.Validate((T)this);
+            if (!validationResult.IsValid)
+            {
+                var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                throw new ValidationException(errorMessages);
+            }
+        }
+
         /// <summary>
         /// Переопределение метода Equals для сравнения сущностей по идентификатору.
         /// </summary>
-        /// <param name="obj">Объект для сравнения.</param>
-        /// <returns>True, если идентификаторы совпадают; иначе False.</returns>
         public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(this, obj))
-                return true;
-
-            if (obj is null || obj.GetType() != GetType())
-                return false;
-
-            var other = (BaseEntity)obj;
-            return Id.Equals(other.Id);
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj is null || obj.GetType() != GetType()) return false;
+            
+            return Id.Equals(((BaseEntity<T>)obj).Id);
         }
 
         /// <summary>
-        /// Переопределение метода GetHashCode, возвращающего хеш-код идентификатора.
+        /// Переопределение метода GetHashCode для получения хеш-кода на основе уникального идентификатора.
         /// </summary>
-        /// <returns>Хеш-код идентификатора.</returns>
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-        
-        /// <summary>
-        /// Оператор сравнения на равенство по идентификатору.
-        /// </summary>
-        /// <param name="left">Левая сущность.</param>
-        /// <param name="right">Правая сущность.</param>
-        /// <returns>True, если идентификаторы равны; иначе False.</returns>
-        public static bool operator ==(BaseEntity? left, BaseEntity? right)
-        {
-            if (left is null)
-                return right is null;
+        /// <returns>Хеш-код, основанный на значении идентификатора.</returns>
+        public override int GetHashCode() => Id.GetHashCode();
 
+        /// <summary>
+        /// Оператор равенства для сравнения двух экземпляров BaseEntity по идентификатору.
+        /// </summary>
+        /// <param name="left">Левая сущность для сравнения.</param>
+        /// <param name="right">Правая сущность для сравнения.</param>
+        /// <returns>True, если сущности равны; иначе False.</returns>
+        public static bool operator ==(BaseEntity<T>? left, BaseEntity<T>? right)
+        {
+            if (left is null) return right is null;
             return left.Equals(right);
         }
 
         /// <summary>
-        /// Оператор сравнения на неравенство по идентификатору.
+        /// Оператор неравенства для сравнения двух экземпляров BaseEntity по идентификатору.
         /// </summary>
-        /// <param name="left">Левая сущность.</param>
-        /// <param name="right">Правая сущность.</param>
-        /// <returns>True, если идентификаторы не равны; иначе False.</returns>
-        public static bool operator !=(BaseEntity? left, BaseEntity? right)
+        /// <param name="left">Левая сущность для сравнения.</param>
+        /// <param name="right">Правая сущность для сравнения.</param>
+        /// <returns>True, если сущности не равны; иначе False.</returns>
+        public static bool operator !=(BaseEntity<T>? left, BaseEntity<T>? right)
         {
             return !(left == right);
         }

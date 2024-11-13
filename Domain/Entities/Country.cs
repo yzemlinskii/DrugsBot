@@ -1,9 +1,11 @@
-﻿namespace Domain.Entities
+﻿using Domain.Validators;
+
+namespace Domain.Entities
 {
     /// <summary>
     /// Справочник стран
     /// </summary>
-    public class Country : BaseEntity
+    public class Country : BaseEntity<Country>
     {
         /// <summary>
         /// Конструктор для инициализации страны с названием и кодом.
@@ -14,6 +16,8 @@
         {
             Name = name;
             Code = code;
+            
+            ValidateEntity(new CountryValidator());
         }
 
         /// <summary>
@@ -26,7 +30,9 @@
         /// </summary>
         public string Code { get; private set; }
         
-        // Навигационное свойство для связи с препаратами
+        /// <summary>
+        /// Навигационное свойство для связи с препаратами.
+        /// </summary>
         public ICollection<Drug> Drugs { get; private set; } = new List<Drug>();
     }
 }
