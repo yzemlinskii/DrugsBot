@@ -2,12 +2,12 @@
 using Domain.Entities;
 using Domain.Primitives;
 
-namespace Domain.Validators
+namespace Domain.Validators;
+
+public sealed class DrugStoreValidator : AbstractValidator<DrugStore>
 {
-    public class DrugStoreValidator : AbstractValidator<DrugStore>
+    public DrugStoreValidator()
     {
-        public DrugStoreValidator()
-        {
             // Валидация для DrugNetwork
             RuleFor(d => d.DrugNetwork)
                 .NotEmpty().WithMessage(ValidationMessage.RequiredField)
@@ -19,7 +19,7 @@ namespace Domain.Validators
 
             // Валидация для Address (только проверка на null)
             RuleFor(d => d.Address)
-                .NotNull().WithMessage(ValidationMessage.RequiredField);
+                .NotNull().WithMessage(ValidationMessage.RequiredField)
+                .SetValidator(new AddressValidator());
         }
-    }
 }

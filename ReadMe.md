@@ -9,6 +9,9 @@
 - **DrugStore**: Справочник аптек с физическими адресами.
 - **DrugItem**: Представляет конкретный препарат, доступный в конкретной аптеке, включая информацию о его стоимости и наличии.
 - **Address**: Объект значения, представляющий адрес аптеки.
+- **FavoriteDrug**: Представляет список избранных препаратов.
+- **Profile**: Представляет список профилей, связанных с Telegram.
+- **Email**: Объект значения, представляющий электронную почту профиля.
 
 ## Доменная диаграмма
 
@@ -21,21 +24,21 @@ erDiagram
         string Name
         string Code
     }
-    
+
     Drug {
         Guid Id PK
         string Name
         string Manufacturer
         string CountryCodeId FK
     }
-    
+
     DrugStore {
         Guid Id PK
         string DrugNetwork
         int Number
         Address Address
     }
-    
+
     DrugItem {
         Guid Id PK
         Guid DrugId FK
@@ -43,18 +46,39 @@ erDiagram
         decimal Cost
         int Count
     }
-    
+
     Address {
         string City
         string Street
         string House
     }
 
+    FavoriteDrug {
+        Guid Id PK
+        Guid ProfileId FK
+        Guid DrugId FK
+        Guid DrugStoreId FK "N"
+    }
+
+    Profile {
+        string ExternalId
+        Email Email
+    }
+
+    Email {
+        string Value
+    }
+
     %% Relationships
     Country ||--o{ Drug : "производит"
-    Drug ||--o{ DrugItem : "доступен как"
+    Drug ||--o{ DrugItem : "доступен как"    
     DrugStore ||--o{ DrugItem : "имеет в наличии"
     DrugStore }o--|| Address : "расположен по адресу"
+    FavoriteDrug }o--|| Profile : "включает"
+    FavoriteDrug }o--|| Drug : "включает"
+    FavoriteDrug }|--|| DrugStore : "может включать"
+    Profile }o--|| FavoriteDrug : "имеет список"
+    Profile }|--|| Email : "может быть доступен как"
 ```
 
 ## 📝 Описание правил валидации сущностей
