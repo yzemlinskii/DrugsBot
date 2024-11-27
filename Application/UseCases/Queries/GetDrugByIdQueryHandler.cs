@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Repositories;
+using Application.Interfaces.Repositories.Read;
 using Domain.Entities;
 using MediatR;
 
