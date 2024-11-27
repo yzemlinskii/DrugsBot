@@ -8,7 +8,7 @@ public sealed class DrugValidator : AbstractValidator<Drug>
 {
     public DrugValidator(Func<string, bool> countryExistsFunc)
     {
-        // Валидация для Name
+        // Валидация для Namea
         RuleFor(d => d.Name)
             .NotEmpty().WithMessage(ValidationMessage.RequiredField)
             .Length(2, 150).WithMessage(ValidationMessage.LengthField)
