@@ -45,6 +45,12 @@ public class DrugsBotDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Конфигурации сущностей
         modelBuilder.ApplyConfiguration(new DrugConfiguration());
+        modelBuilder.ApplyConfiguration(new DrugItemConfiguration());
+        modelBuilder.ApplyConfiguration(new DrugStoreConfiguration());
+        modelBuilder.ApplyConfiguration(new CountryConfiguration());
+        modelBuilder.ApplyConfiguration(new ProfileConfiguration());
+        modelBuilder.ApplyConfiguration(new FavoriteDrugConfiguration());
     }
 }
