@@ -3,11 +3,6 @@
 public interface IWriteRepository<T> where T : class
 {
     /// <summary>
-    /// Репозиторий для операций чтения
-    /// </summary>
-    IReadRepository<T> ReadRepository { get; }
-    
-    /// <summary>
     /// Метод для добавления сущности
     /// </summary>
     /// <param name="entity"></param>
