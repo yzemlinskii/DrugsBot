@@ -1,14 +1,18 @@
 ﻿using Domain.Entities;
 using Insfrastructure.Dal.Configurations;
+using Insfrastructure.Dal.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Insfrastructure.Dal;
 
 public class DrugsBotDbContext : DbContext
 {
-    public DrugsBotDbContext(DbContextOptions<DrugsBotDbContext> options) : base(options)
+    private readonly DatabaseSettings _options;
+
+    public DrugsBotDbContext(IOptions<DatabaseSettings> options)
     {
-        
+        _options = options.Value;
     }
     
     /// <summary>
@@ -40,7 +44,6 @@ public class DrugsBotDbContext : DbContext
     /// Таблица профилей пользователей.
     /// </summary>
     public DbSet<Profile> Profiles { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -52,5 +55,13 @@ public class DrugsBotDbContext : DbContext
         modelBuilder.ApplyConfiguration(new CountryConfiguration());
         modelBuilder.ApplyConfiguration(new ProfileConfiguration());
         modelBuilder.ApplyConfiguration(new FavoriteDrugConfiguration());
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseNpgsql(_options.ConnectionString, (options) =>
+        {
+            options.CommandTimeout(_options.CommandTimeout);
+        });
     }
 }
